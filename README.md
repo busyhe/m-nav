@@ -1,5 +1,7 @@
 # M-Nav: Notion-powered Navigation Site
 
+English | [简体中文](./README_zh.md)
+
 A navigation site that displays content from a Notion database, built with Next.js 15.
 
 ## Features
