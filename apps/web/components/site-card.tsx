@@ -29,11 +29,18 @@ export function SiteCard({
         <CardTitle className='flex items-center flex-row justify-between'>
           <div className='flex items-center flex-row gap-2'>
             <Image
-              src={`/favicon/${new URL(href || '').hostname}`}
+              src={`/favicon/${(() => {
+                try {
+                  return new URL(href || '').hostname;
+                } catch {
+                  return 'default';
+                }
+              })()}`}
               alt={title}
               width={20}
               height={20}
-              className=' object-cover overflow-hidden'
+              className='object-cover overflow-hidden shrink-0'
+              unoptimized
             />
             <span>{title}</span>
           </div>

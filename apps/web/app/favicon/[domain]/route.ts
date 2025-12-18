@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import { getFavicons, proxyFavicon } from '@/lib/server';
+import Keyv from 'keyv';
 
-export const runtime = 'edge';
+const cache = new Keyv();
+
+export const runtime = 'nodejs';
 
 export async function GET(
   request: NextRequest,
@@ -9,7 +12,33 @@ export async function GET(
 ) {
   const { domain } = await params;
   const startTime = Date.now();
-  const asciiDomain = new URL(`http://${domain}`).hostname;
+
+  let hostname = domain;
+  try {
+    hostname = new URL(`http://${domain}`).hostname;
+  } catch {
+    // Fallback to domain if URL parsing fails
+  }
+  const asciiDomain = hostname;
+
+  // Check cache
+  const cached = (await cache.get(asciiDomain)) as {
+    buffer: Buffer;
+    contentType: string;
+  } | null;
+  if (cached) {
+    const executionTime = Date.now() - startTime;
+    return new Response(cached.buffer as any, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, max-age=86400',
+        'Content-Type': cached.contentType,
+        'Content-Length': cached.buffer.byteLength.toString(),
+        'X-Cache': 'HIT',
+        'X-Execution-Time': `${executionTime}ms`,
+      },
+    });
+  }
   const svg404 = () => {
     const firstLetter = domain.charAt(0).toUpperCase();
     const svgContent = `
@@ -71,19 +100,29 @@ export async function GET(
       const base64Data = selectedIcon.href.split(',')[1];
       if (base64Data) {
         const iconBuffer = Buffer.from(base64Data, 'base64');
+        const contentType = selectedIcon.href.replace(
+          /data:(image.*?);.*/,
+          '$1'
+        );
+
+        // Cache the result
+        await cache.set(
+          asciiDomain,
+          { buffer: iconBuffer, contentType },
+          24 * 60 * 60 * 1000
+        );
+
         // Calculate execution time
         const endTime = Date.now();
         const executionTime = endTime - startTime;
 
-        return new Response(iconBuffer, {
+        return new Response(iconBuffer as any, {
           status: 200,
           headers: {
             'Cache-Control': 'public, max-age=86400',
-            'Content-Type': selectedIcon.href.replace(
-              /data:(image.*?);.*/,
-              '$1'
-            ),
+            'Content-Type': contentType,
             'Content-Length': iconBuffer.byteLength.toString(),
+            'X-Cache': 'MISS',
             'X-Execution-Time': `${executionTime} ms`,
           },
         });
@@ -95,19 +134,29 @@ export async function GET(
     }
 
     const iconResponse = await fetch(selectedIcon.href, { headers });
+    if (!iconResponse.ok) return svg404();
+    const iconBuffer = Buffer.from(await iconResponse.arrayBuffer());
+    const contentType = iconResponse.headers.get('Content-Type') || 'image/png';
+
+    // Cache the result
+    await cache.set(
+      asciiDomain,
+      { buffer: iconBuffer, contentType },
+      24 * 60 * 60 * 1000
+    );
+
     // Calculate execution time
     const endTime = Date.now();
     const executionTime = endTime - startTime;
-    if (!iconResponse.ok) return svg404();
-    const iconBuffer = await iconResponse.arrayBuffer();
 
     // Return the image response with execution time
     return new Response(iconBuffer, {
       status: 200,
       headers: {
         'Cache-Control': 'public, max-age=86400',
-        'Content-Type': iconResponse.headers.get('Content-Type') || 'image/png',
+        'Content-Type': contentType,
         'Content-Length': iconBuffer.byteLength.toString(),
+        'X-Cache': 'MISS',
         'X-Execution-Time': `${executionTime}ms`,
       },
     });
