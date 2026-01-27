@@ -50,8 +50,16 @@ export function SiteContentClient({ siteData }: SiteContentClientProps) {
   return (
     <>
       {Object.keys(filteredData).map((type: string) => (
-        <div key={type} className='mb-8'>
-          <h2 className='text-xl font-semibold mb-4 capitalize'>{type}</h2>
+        <div key={type} id={type} className='mb-8 scroll-mt-20'>
+          <h2 className='text-xl font-semibold mb-4 capitalize group flex items-center gap-2'>
+            {type}
+            <a
+              href={`#${type}`}
+              className='opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground'
+            >
+              #
+            </a>
+          </h2>
           <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
             {filteredData[type]?.map((item: DatabaseItem) => (
               <SiteCard
@@ -74,4 +82,4 @@ export function SiteContentClient({ siteData }: SiteContentClientProps) {
       )}
     </>
   );
-} 
+}
