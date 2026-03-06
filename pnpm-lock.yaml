@@ -82,14 +82,14 @@ catalogs:
       specifier: ^0.4.4
       version: 0.4.4
     notion-client:
-      specifier: ^7.6.0
-      version: 7.6.0
+      specifier: ^7.8.2
+      version: 7.8.2
     notion-types:
-      specifier: ^7.6.0
-      version: 7.6.0
+      specifier: ^7.8.2
+      version: 7.8.2
     notion-utils:
-      specifier: ^7.6.0
-      version: 7.6.0
+      specifier: ^7.8.2
+      version: 7.8.2
     prettier:
       specifier: ^3.5.1
       version: 3.5.1
@@ -175,13 +175,13 @@ importers:
         version: 0.4.4(react-dom@19.1.2(react@19.1.2))(react@19.1.2)
       notion-client:
         specifier: 'catalog:'
-        version: 7.6.0
+        version: 7.8.2
       notion-types:
         specifier: 'catalog:'
-        version: 7.6.0
+        version: 7.8.2
       notion-utils:
         specifier: 'catalog:'
-        version: 7.6.0
+        version: 7.8.2
       react:
         specifier: 'catalog:'
         version: 19.1.2
@@ -1996,16 +1996,16 @@ packages:
     resolution: {integrity: sha512-X06Mfd/5aKsRHc0O0J5CUedwnPmnDtLF2+nq+KN9KSDlJHkPuh0JUviWjEWMe0SW/9TDdSLVPuk7L5gGTIA1/w==}
     engines: {node: '>=14.16'}
 
-  notion-client@7.6.0:
-    resolution: {integrity: sha512-nnO4Tbn6gP/r3xHgHuyxjYiWgLPQ32HsPh4cU6Feg27+vQtQnKfYnLjC3YZWNp1Ni2E0BQYxPQq/mW6w/3YnSQ==}
+  notion-client@7.8.2:
+    resolution: {integrity: sha512-yR09dXvskQ5SRklHCYS2CwywttGbjzvnBXhiPoXWf9kYbBw5NqJnivBpEDiSYZ81CWckx8kmRhx4kHAW/vAswQ==}
     engines: {node: '>=18'}
 
-  notion-types@7.6.0:
-    resolution: {integrity: sha512-jFXrNjGiHLDkz0f2wktD8J3tsse4U+UX5+UG6+CpfwruGh+2zrPY6Qo1SdIccLxS17rzBMYcU8gtSACBpexOmA==}
+  notion-types@7.8.2:
+    resolution: {integrity: sha512-AB0+Dl75NuDB/ZLFpFvdtTAb0Gc4reY5py0mXu/st2w15ezna37gyaAB1fEeCiimWpM02JIH3PILK5N7XlfuAg==}
     engines: {node: '>=18'}
 
-  notion-utils@7.6.0:
-    resolution: {integrity: sha512-DOP1vK4MBWhFcYFUEtFzGR6H6KZQz3PGJkmvB+/gCfjGd8Y2NSDelj+Eypelz16PtPALUAJmvx2e19Oegxcq2g==}
+  notion-utils@7.8.2:
+    resolution: {integrity: sha512-7xxiqF1803Zn9eW6J+XbjR4YMNdZt2en5HuwQcNnbLF0IN/qFnF3zssBVxBWuMNh15q8W1/EQzFmQwZtp1iPPQ==}
     engines: {node: '>=18'}
 
   npm-run-path@4.0.1:
@@ -4534,21 +4534,21 @@ snapshots:
 
   normalize-url@8.1.0: {}
 
-  notion-client@7.6.0:
+  notion-client@7.8.2:
     dependencies:
-      notion-types: 7.6.0
-      notion-utils: 7.6.0
+      notion-types: 7.8.2
+      notion-utils: 7.8.2
       ofetch: 1.4.1
       p-map: 7.0.3
 
-  notion-types@7.6.0: {}
+  notion-types@7.8.2: {}
 
-  notion-utils@7.6.0:
+  notion-utils@7.8.2:
     dependencies:
       is-url-superb: 6.1.0
       memoize: 10.1.0
       normalize-url: 8.1.0
-      notion-types: 7.6.0
+      notion-types: 7.8.2
       p-queue: 8.1.1
 
   npm-run-path@4.0.1:

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NotionAPI } from 'notion-client';
+import { ExtendedRecordMap } from 'notion-types';
 import { idToUuid, getPageTitle } from 'notion-utils';
 import { cache } from 'react';
 
@@ -15,7 +16,7 @@ export default function getAllPageIds(
   collectionQuery: Record<string, any>,
   collectionId: string | undefined,
   collectionView: Record<string, any>,
-  viewIds: string[] | undefined
+  viewIds: string[] | undefined,
 ) {
   // Return empty array if any required parameters are missing
   if (!collectionQuery || !collectionId || !viewIds || viewIds.length === 0) {
@@ -61,7 +62,7 @@ function getPageProperties(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prefix = '',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  pageProperties: any[] = []
+  pageProperties: any[] = [],
 ) {
   if (!value || !schema) return null;
 
@@ -99,6 +100,45 @@ export interface PageData {
   items: Record<string, DatabaseItem[]>;
 }
 
+export function normalizeRecordMap(recordMap: ExtendedRecordMap): void {
+  // Normalize blocks
+  for (const blockId of Object.keys(recordMap.block)) {
+    const entry = recordMap.block[blockId] as any;
+    if (
+      entry?.value &&
+      typeof entry.value === 'object' &&
+      entry.value.value &&
+      typeof entry.value.value === 'object' &&
+      entry.value.value.id
+    ) {
+      // Double-nested: flatten { value: { value: {...}, role }, spaceId } → { value: {...}, role }
+      recordMap.block[blockId] = {
+        value: entry.value.value,
+        role: entry.value.role ?? entry.role ?? 'reader',
+      } as any;
+    }
+  }
+
+  // Normalize collections (same pattern can occur)
+  if (recordMap.collection) {
+    for (const collectionId of Object.keys(recordMap.collection)) {
+      const entry = recordMap.collection[collectionId] as any;
+      if (
+        entry?.value &&
+        typeof entry.value === 'object' &&
+        entry.value.value &&
+        typeof entry.value.value === 'object' &&
+        entry.value.value.id
+      ) {
+        recordMap.collection[collectionId] = {
+          value: entry.value.value,
+          role: entry.value.role ?? entry.role ?? 'reader',
+        } as any;
+      }
+    }
+  }
+}
+
 const getPageDataInternal = async (): Promise<PageData> => {
   if (!process.env.NOTION_PAGE_ID) {
     throw new Error('NOTION_PAGE_ID is not defined in environment variables');
@@ -113,6 +153,8 @@ const getPageDataInternal = async (): Promise<PageData> => {
       fetchCollections: true,
       fetchMissingBlocks: true,
     });
+
+    normalizeRecordMap(recordMap);
 
     // Get collection data
     const collection = Object.values(recordMap.collection)[0]?.value;
@@ -136,7 +178,7 @@ const getPageDataInternal = async (): Promise<PageData> => {
       collectionQuery,
       collectionId || '',
       collectionView,
-      viewIds || []
+      viewIds || [],
     );
 
     // Process items by type
@@ -160,7 +202,7 @@ const getPageDataInternal = async (): Promise<PageData> => {
             value,
             schema,
             '',
-            collection?.format?.collection_page_properties
+            collection?.format?.collection_page_properties,
           );
           if (!props) return;
 
