@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NotionAPI } from 'notion-client';
-import { ExtendedRecordMap } from 'notion-types';
+import { Collection, ExtendedRecordMap } from 'notion-types';
 import { idToUuid, getPageTitle } from 'notion-utils';
 import { cache } from 'react';
 
@@ -157,7 +157,9 @@ const getPageDataInternal = async (): Promise<PageData> => {
     normalizeRecordMap(recordMap);
 
     // Get collection data
-    const collection = Object.values(recordMap.collection)[0]?.value;
+    const collection = Object.values(recordMap.collection)[0]?.value as
+      | Collection
+      | undefined;
     const collectionQuery = recordMap.collection_query;
     const block = recordMap.block;
     const schema = collection?.schema;
