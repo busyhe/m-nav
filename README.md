@@ -15,6 +15,8 @@ A navigation site that displays content from a Notion database, built with Next.
 
 ## Setup
 
+Requires Node.js 22.18 or later (a transitive dependency of Notion 8 requires Node.js 22). Docker images use Node.js 22.
+
 1. Clone the repository:
 
 ```bash
@@ -97,7 +99,6 @@ docker compose up -d
 ```bash
 # Build the image
 docker build \
-  --build-arg NOTION_PAGE_ID=your_notion_page_id \
   --build-arg NEXT_PUBLIC_GA_ID=your_ga_id \
   -t m-nav .
 
@@ -109,3 +110,7 @@ docker run -d -p 3000:3000 \
 ```
 
 The application will be available at `http://localhost:3000`.
+
+`NOTION_PAGE_ID` is read at runtime and is not required when building the Docker image. To upgrade an existing Compose deployment, run `docker compose up -d --build`. On Vercel, select Node.js 22.x or later and redeploy.
+
+Run the Notion parsing regression tests with `pnpm --filter @m-nav/web test`.

@@ -82,14 +82,14 @@ catalogs:
       specifier: ^0.4.4
       version: 0.4.4
     notion-client:
-      specifier: ^7.8.2
-      version: 7.8.2
+      specifier: 8.0.8
+      version: 8.0.8
     notion-types:
-      specifier: ^7.8.2
-      version: 7.8.2
+      specifier: 8.0.8
+      version: 8.0.8
     notion-utils:
-      specifier: ^7.8.2
-      version: 7.8.2
+      specifier: 8.0.8
+      version: 8.0.8
     prettier:
       specifier: ^3.5.1
       version: 3.5.1
@@ -175,13 +175,13 @@ importers:
         version: 0.4.4(react-dom@19.1.2(react@19.1.2))(react@19.1.2)
       notion-client:
         specifier: 'catalog:'
-        version: 7.8.2
+        version: 8.0.8
       notion-types:
         specifier: 'catalog:'
-        version: 7.8.2
+        version: 8.0.8
       notion-utils:
         specifier: 'catalog:'
-        version: 7.8.2
+        version: 8.0.8
       react:
         specifier: 'catalog:'
         version: 19.1.2
@@ -1291,8 +1291,8 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
-  eventemitter3@5.0.1:
-    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+  eventemitter3@5.0.4:
+    resolution: {integrity: sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==}
 
   execa@5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
@@ -1896,9 +1896,9 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  memoize@10.1.0:
-    resolution: {integrity: sha512-MMbFhJzh4Jlg/poq1si90XRlTZRDHVqdlz2mPyGJ6kqMpyHUyVpDd5gpFAvVehW64+RA1eKE9Yt8aSLY7w2Kgg==}
-    engines: {node: '>=18'}
+  memoize@11.0.0:
+    resolution: {integrity: sha512-cjsfZaC9b1clqPeIVMbb5dLHSXgdgGWGxdAU3oTUUkHiwWTKTBNnSmcqWJncNjYtBi3S8Rp0c5GIiyGztR8TRA==}
+    engines: {node: '>=22'}
 
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -1988,24 +1988,27 @@ packages:
   node-fetch-native@1.6.6:
     resolution: {integrity: sha512-8Mc2HhqPdlIfedsuZoc3yioPuzp6b+L5jRCRY1QzuWZh2EGJVQrGppC6V6cF0bLdbW0+O2YpqCA25aF/1lvipQ==}
 
+  node-fetch-native@1.6.7:
+    resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
+
   node-plop@0.26.3:
     resolution: {integrity: sha512-Cov028YhBZ5aB7MdMWJEmwyBig43aGL5WT4vdoB28Oitau1zZAcHUn8Sgfk9HM33TqhtLJ9PlM/O0Mv+QpV/4Q==}
     engines: {node: '>=8.9.4'}
 
-  normalize-url@8.1.0:
-    resolution: {integrity: sha512-X06Mfd/5aKsRHc0O0J5CUedwnPmnDtLF2+nq+KN9KSDlJHkPuh0JUviWjEWMe0SW/9TDdSLVPuk7L5gGTIA1/w==}
-    engines: {node: '>=14.16'}
+  normalize-url@9.0.1:
+    resolution: {integrity: sha512-ARftfC5HdUNu9jJeL8pHj8debUIHA2b91FizCoMzY4lG6dDX13jdvTK0TBe24IBDRf2HvJSzzwEPvmbkQWHRSg==}
+    engines: {node: '>=20'}
 
-  notion-client@7.8.2:
-    resolution: {integrity: sha512-yR09dXvskQ5SRklHCYS2CwywttGbjzvnBXhiPoXWf9kYbBw5NqJnivBpEDiSYZ81CWckx8kmRhx4kHAW/vAswQ==}
+  notion-client@8.0.8:
+    resolution: {integrity: sha512-5oRaef3lxsaM7KOIKcTTlhnAI8KSj5FQH7uA0tmgLxjBMLmE40/+orwIzwIBi8PvTeTsx+Gj8k9CBAOg5XB7fg==}
     engines: {node: '>=18'}
 
-  notion-types@7.8.2:
-    resolution: {integrity: sha512-AB0+Dl75NuDB/ZLFpFvdtTAb0Gc4reY5py0mXu/st2w15ezna37gyaAB1fEeCiimWpM02JIH3PILK5N7XlfuAg==}
+  notion-types@8.0.8:
+    resolution: {integrity: sha512-crMgFadWAa1XSOMBAKfgy1eB9RW9e1v7j61lm0/ksalz91tCJwbu1sYbkbjvB1UWjC3jHhuKfwsT4FkUZh8z9w==}
     engines: {node: '>=18'}
 
-  notion-utils@7.8.2:
-    resolution: {integrity: sha512-7xxiqF1803Zn9eW6J+XbjR4YMNdZt2en5HuwQcNnbLF0IN/qFnF3zssBVxBWuMNh15q8W1/EQzFmQwZtp1iPPQ==}
+  notion-utils@8.0.8:
+    resolution: {integrity: sha512-TGOmuJqOjOXeBhi1Tab8OyuAUSDrNi8C4skRpIwRGrBGZCKtql2WB9BwcAgNQCt+bwUlyQfmPmEnI7DwibythQ==}
     engines: {node: '>=18'}
 
   npm-run-path@4.0.1:
@@ -2045,8 +2048,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  ofetch@1.4.1:
-    resolution: {integrity: sha512-QZj2DfGplQAr2oj9KzceK9Hwz6Whxazmn85yYeVuS3u9XTMOGMRx0kO95MQ+vLsj/S/NwBDMMLU5hpxvI6Tklw==}
+  ofetch@1.5.1:
+    resolution: {integrity: sha512-2W4oUZlVaqAPAil6FUg/difl6YhqhUR7x2eZY4bQCko22UXg3hptq9KLQdqFClV+Wu85UX7hNtdGTngi/1BxcA==}
 
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
@@ -2090,17 +2093,17 @@ packages:
     resolution: {integrity: sha512-d3qXVTF/s+W+CdJ5A29wywV2n8CQQYahlgz2bFiA+4eVNJbHJodPZ+/gXwPGh0bOqA+j8S+6+ckmvLGPk1QpxQ==}
     engines: {node: '>=8'}
 
-  p-map@7.0.3:
-    resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
+  p-map@7.0.8:
+    resolution: {integrity: sha512-MitaVsCuCFIvOLLPIU7NnfrZvS9H9h7kwMUkDo+T2pEISaJD48IV9S8iIdXB7PsvvdxyYcsSTTrr90XKsbulNw==}
     engines: {node: '>=18'}
 
-  p-queue@8.1.1:
-    resolution: {integrity: sha512-aNZ+VfjobsWryoiPnEApGGmf5WmNsCo9xu8dfaYamG5qaLP7ClhLN6NgsFe6SwJ2UbLEBK5dv9x8Mn5+RVhMWQ==}
-    engines: {node: '>=18'}
+  p-queue@9.3.3:
+    resolution: {integrity: sha512-NXAOdnEe5FsZJfT4oK84lE1Y5cFFdWlRuOo5tww8DyNMxyRXwn39fIkUtNLKppcPC+UYU/bXujNCUGDv01y7CA==}
+    engines: {node: '>=20'}
 
-  p-timeout@6.1.4:
-    resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
-    engines: {node: '>=14.16'}
+  p-timeout@7.0.2:
+    resolution: {integrity: sha512-prbX4Z3YszrFNgH+MW5Zoeq3baXrMtP/MQnFeET90UB/GtGcGDQ5Usg9OCy6ETjTTntOw1SL2z9fMPUppN3Guw==}
+    engines: {node: '>=20'}
 
   pac-proxy-agent@7.2.0:
     resolution: {integrity: sha512-TEB8ESquiLMc0lV8vcd5Ql/JAKAoyzHFXaStwjkzpOpC5Yv+pIzLfHvjTSdf3vpa2bMiUQrg9i6276yn8666aA==}
@@ -3812,7 +3815,7 @@ snapshots:
 
   esutils@2.0.3: {}
 
-  eventemitter3@5.0.1: {}
+  eventemitter3@5.0.4: {}
 
   execa@5.1.1:
     dependencies:
@@ -4441,7 +4444,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  memoize@10.1.0:
+  memoize@11.0.0:
     dependencies:
       mimic-function: 5.0.1
 
@@ -4518,6 +4521,8 @@ snapshots:
 
   node-fetch-native@1.6.6: {}
 
+  node-fetch-native@1.6.7: {}
+
   node-plop@0.26.3:
     dependencies:
       '@babel/runtime-corejs3': 7.26.9
@@ -4532,24 +4537,24 @@ snapshots:
       mkdirp: 0.5.6
       resolve: 1.22.10
 
-  normalize-url@8.1.0: {}
+  normalize-url@9.0.1: {}
 
-  notion-client@7.8.2:
+  notion-client@8.0.8:
     dependencies:
-      notion-types: 7.8.2
-      notion-utils: 7.8.2
-      ofetch: 1.4.1
-      p-map: 7.0.3
+      notion-types: 8.0.8
+      notion-utils: 8.0.8
+      ofetch: 1.5.1
+      p-map: 7.0.8
 
-  notion-types@7.8.2: {}
+  notion-types@8.0.8: {}
 
-  notion-utils@7.8.2:
+  notion-utils@8.0.8:
     dependencies:
       is-url-superb: 6.1.0
-      memoize: 10.1.0
-      normalize-url: 8.1.0
-      notion-types: 7.8.2
-      p-queue: 8.1.1
+      memoize: 11.0.0
+      normalize-url: 9.0.1
+      notion-types: 8.0.8
+      p-queue: 9.3.3
 
   npm-run-path@4.0.1:
     dependencies:
@@ -4598,10 +4603,10 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  ofetch@1.4.1:
+  ofetch@1.5.1:
     dependencies:
       destr: 2.0.5
-      node-fetch-native: 1.6.6
+      node-fetch-native: 1.6.7
       ufo: 1.6.1
 
   ohash@2.0.11: {}
@@ -4666,14 +4671,14 @@ snapshots:
     dependencies:
       aggregate-error: 3.1.0
 
-  p-map@7.0.3: {}
+  p-map@7.0.8: {}
 
-  p-queue@8.1.1:
+  p-queue@9.3.3:
     dependencies:
-      eventemitter3: 5.0.1
-      p-timeout: 6.1.4
+      eventemitter3: 5.0.4
+      p-timeout: 7.0.2
 
-  p-timeout@6.1.4: {}
+  p-timeout@7.0.2: {}
 
   pac-proxy-agent@7.2.0:
     dependencies:

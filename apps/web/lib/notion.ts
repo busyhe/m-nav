@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NotionAPI } from 'notion-client';
-import { Collection, ExtendedRecordMap } from 'notion-types';
-import { idToUuid, getPageTitle } from 'notion-utils';
+import type { Collection, ExtendedRecordMap } from 'notion-types';
+import {
+  parsePageId,
+  getPageTitle,
+  getBlockValue,
+  getBlockCollectionId,
+  getTextContent,
+} from 'notion-utils';
 import { cache } from 'react';
 
 // Initialize the Notion client
@@ -11,92 +17,57 @@ const notion = new NotionAPI({
   userTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 });
 
-// Helper function to get all page IDs from a collection
-// Refactored to handle new Notion data format with multiple fallback strategies.
+// Query results are authoritative: page_sort can contain stale or filtered-out IDs.
 export default function getAllPageIds(
   collectionQuery: Record<string, any> | undefined,
   collectionId: string | undefined,
   collectionView: Record<string, any> | undefined,
   viewIds: string[] | undefined,
 ): string[] {
+  const queries = collectionId ? collectionQuery?.[collectionId] : undefined;
+  const targetViewIds = viewIds?.length
+    ? viewIds.slice(0, 1)
+    : Object.keys(queries ?? {});
   const pageSet = new Set<string>();
-
-  try {
-    // ── Strategy 1: read page_sort from collectionView[viewId].value.value (new format) ──
-    if (collectionView && viewIds && viewIds.length > 0) {
-      const targetViewId = viewIds[0]!;
-      const pageSort = (collectionView as any)?.[targetViewId]?.value?.value
-        ?.page_sort;
-      if (Array.isArray(pageSort) && pageSort.length > 0) {
-        pageSort.forEach((id: string) => pageSet.add(id));
-      }
+  let hasQueryResults = false;
+  const addIds = (ids: unknown) => {
+    if (!Array.isArray(ids)) return;
+    hasQueryResults = true;
+    for (const id of ids) {
+      if (typeof id === 'string') pageSet.add(id);
     }
+  };
 
-    // ── Strategy 2: iterate every view's page_sort as a fallback ──
-    if (pageSet.size === 0 && collectionView) {
-      Object.values(collectionView).forEach((viewEntry: any) => {
-        const pageSort = viewEntry?.value?.value?.page_sort;
-        if (Array.isArray(pageSort)) {
-          pageSort.forEach((id: string) => pageSet.add(id));
-        }
-      });
+  for (const viewId of targetViewIds) {
+    const query = queries?.[viewId];
+    addIds(query?.blockIds);
+    for (const reducer of Object.values(query ?? {}) as any[]) {
+      addIds(reducer?.blockIds);
     }
-
-    // ── Strategy 3: legacy collectionQuery support ──
-    if (pageSet.size === 0 && collectionQuery && collectionId) {
-      const viewQuery = (collectionQuery as any)?.[collectionId];
-      if (viewQuery) {
-        Object.values(viewQuery).forEach((viewData: any) => {
-          [
-            viewData?.collection_group_results?.blockIds,
-            viewData?.results?.blockIds,
-            viewData?.blockIds,
-          ].forEach((ids) => {
-            if (Array.isArray(ids))
-              ids.forEach((id: string) => pageSet.add(id));
-          });
-        });
-
-        // Also support grouped table/list views (table_groups / list_groups)
-        if (pageSet.size === 0 && viewIds && viewIds.length > 0) {
-          const view = viewQuery[viewIds[0]!] as any;
-          const tableGroups = view?.table_groups || view?.list_groups;
-          if (tableGroups?.results) {
-            for (const group of tableGroups.results) {
-              if (!group?.value?.value) continue;
-              const title = group.value.value.value || '';
-              const items: string[] =
-                view[`results:text:${title}`]?.blockIds || [];
-              items.forEach((id) => pageSet.add(id));
-            }
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching page IDs:', error);
-    return [];
   }
 
+  // An explicitly empty query must stay empty, even if page_sort has old IDs.
+  if (hasQueryResults) return [...pageSet];
+
+  for (const viewId of targetViewIds) {
+    const view = getBlockValue(collectionView?.[viewId]) as any;
+    if (Array.isArray(view?.page_sort)) {
+      for (const id of view.page_sort) {
+        if (typeof id === 'string') pageSet.add(id);
+      }
+    }
+  }
   return [...pageSet];
 }
 
 // Helper function to get page properties
-function getPageProperties(
-  pageId: string,
-  value: any,
-  schema: any,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  prefix = '',
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  pageProperties: any[] = [],
-) {
+function getPageProperties(pageId: string, value: any, schema: any) {
   if (!value || !schema) return null;
 
   const propertyMap: Record<string, any> = {};
 
   Object.keys(schema).forEach((key) => {
-    const propertyValue = value.properties?.[key]?.[0]?.[0];
+    const propertyValue = getTextContent(value.properties?.[key]);
     const propertyName = schema[key]?.name;
 
     if (propertyName) {
@@ -127,55 +98,67 @@ export interface PageData {
   items: Record<string, DatabaseItem[]>;
 }
 
-// Unwrap a record entry across the various Notion data formats:
-//   New:    { spaceId, value: { value: { id, ... }, role } }
-//   Mid:    { value: { id, ... }, role }
-//   Legacy: { value: { id, ... } }
-function unwrapEntry(entry: any): { value: any; role: string } | null {
-  if (!entry) return null;
-
-  // New double-nested format
-  if (entry?.value?.value?.id && entry?.value?.role !== undefined) {
-    return {
-      value: entry.value.value,
-      role: entry.value.role ?? 'reader',
-    };
-  }
-
-  // Mid/legacy format with direct value.id
-  if (entry?.value?.id) {
-    return {
-      value: entry.value,
-      role: entry.role ?? 'reader',
-    };
-  }
-
-  return null;
-}
-
+// Keep all record tables consistent, including collection views.
 export function normalizeRecordMap(recordMap: ExtendedRecordMap): void {
-  // Normalize blocks
-  for (const blockId of Object.keys(recordMap.block)) {
-    const entry = recordMap.block[blockId] as any;
-    const unwrapped = unwrapEntry(entry);
-    if (unwrapped) {
-      // Strip crdt_* fields that react-notion-x cannot handle
-      delete unwrapped.value.crdt_data;
-      delete unwrapped.value.crdt_format_version;
-      recordMap.block[blockId] = unwrapped as any;
-    }
-  }
-
-  // Normalize collections (same pattern can occur)
-  if (recordMap.collection) {
-    for (const collectionId of Object.keys(recordMap.collection)) {
-      const entry = recordMap.collection[collectionId] as any;
-      const unwrapped = unwrapEntry(entry);
-      if (unwrapped) {
-        recordMap.collection[collectionId] = unwrapped as any;
+  for (const table of [
+    recordMap.block,
+    recordMap.collection,
+    recordMap.collection_view,
+  ]) {
+    for (const [id, entry] of Object.entries(table ?? {})) {
+      const value = getBlockValue(entry as any);
+      if (value) {
+        (table as Record<string, any>)[id] = { value, role: 'reader' };
       }
     }
   }
+}
+
+export function parsePageData(
+  recordMap: ExtendedRecordMap,
+  pageId: string,
+): PageData {
+  normalizeRecordMap(recordMap);
+  const rawMetadata = getBlockValue(recordMap.block[pageId]);
+  if (!rawMetadata)
+    throw new Error('The configured Notion page is unavailable');
+  const collectionId =
+    getBlockCollectionId(rawMetadata, recordMap) ||
+    Object.keys(recordMap.collection)[0];
+  const collection = collectionId
+    ? (getBlockValue(recordMap.collection[collectionId]) as
+        | Collection
+        | undefined)
+    : undefined;
+  if (!collection) throw new Error('No accessible Notion database was found');
+
+  const viewIds = 'view_ids' in rawMetadata ? rawMetadata.view_ids : undefined;
+  const pageIds = getAllPageIds(
+    recordMap.collection_query,
+    collectionId,
+    recordMap.collection_view,
+    viewIds,
+  );
+  const items = new Map<string, DatabaseItem[]>();
+  for (const id of pageIds) {
+    const value = getBlockValue(recordMap.block[id]);
+    if (!value) throw new Error(`Missing Notion database item: ${id}`);
+    if (value.alive === false) continue;
+    const props = getPageProperties(id, value, collection.schema);
+    if (!props) continue;
+    const group = items.get(props.type) ?? [];
+    group.push(props);
+    items.set(props.type, group);
+  }
+
+  return {
+    title:
+      getPageTitle(recordMap) ||
+      getTextContent(collection.name) ||
+      'Navigation',
+    description: (rawMetadata.format as any)?.seo_description || '',
+    items: Object.fromEntries(items),
+  };
 }
 
 const getPageDataInternal = async (): Promise<PageData> => {
@@ -183,82 +166,17 @@ const getPageDataInternal = async (): Promise<PageData> => {
     throw new Error('NOTION_PAGE_ID is not defined in environment variables');
   }
 
-  const envPageId = process.env.NOTION_PAGE_ID;
-  const pageId = idToUuid(envPageId);
+  const pageId = parsePageId(process.env.NOTION_PAGE_ID);
+  if (!pageId)
+    throw new Error('NOTION_PAGE_ID must be a valid Notion page ID or URL');
 
-  try {
-    // Fetch the page data with additional options
-    const recordMap = await notion.getPage(pageId, {
-      fetchCollections: true,
-      fetchMissingBlocks: true,
-    });
-
-    normalizeRecordMap(recordMap);
-
-    // Get collection data
-    const collection = Object.values(recordMap.collection)[0]?.value as
-      | Collection
-      | undefined;
-    const collectionQuery = recordMap.collection_query;
-    const block = recordMap.block;
-    const schema = collection?.schema;
-    const rawMetadata = block[pageId]?.value as any;
-    const collectionView = recordMap.collection_view;
-    const collectionId = Object.keys(recordMap.collection)[0];
-    const viewIds = rawMetadata?.view_ids as string[] | undefined;
-
-    // Get page title and icon
-    const title =
-      getPageTitle(recordMap) ||
-      rawMetadata?.properties?.title?.[0]?.[0] ||
-      'Navigation';
-    const description = rawMetadata?.format?.seo_description || '';
-
-    // Get all page IDs from the collection
-    const pageIds = getAllPageIds(
-      collectionQuery,
-      collectionId || '',
-      collectionView,
-      viewIds || [],
-    );
-
-    // Process items by type
-    const itemsByType: Record<string, DatabaseItem[]> = {};
-
-    pageIds.forEach((id: string) => {
-      const blockItem = block[id];
-      if (!blockItem) return;
-
-      const value = blockItem.value;
-      if (!value) return;
-
-      const props = getPageProperties(
-        id,
-        value,
-        schema,
-        '',
-        collection?.format?.collection_page_properties,
-      );
-      if (!props) return;
-
-      const type = props.type || 'other';
-
-      if (!itemsByType[type]) {
-        itemsByType[type] = [];
-      }
-
-      itemsByType[type].push(props);
-    });
-
-    return {
-      title,
-      description,
-      items: itemsByType,
-    };
-  } catch (error) {
-    console.error('Error fetching Notion data:', error);
-    throw error;
-  }
+  const recordMap = await notion.getPage(pageId, {
+    fetchCollections: true,
+    fetchMissingBlocks: true,
+    throwOnCollectionErrors: true,
+    signFileUrls: false,
+  });
+  return parsePageData(recordMap, pageId);
 };
 
 // 使用 React cache 包装函数，确保在同一请求周期内只执行一次

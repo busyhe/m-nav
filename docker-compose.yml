@@ -4,7 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - NOTION_PAGE_ID=${NOTION_PAGE_ID}
         - NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID}
     ports:
       - "3000:3000"

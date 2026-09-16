@@ -4,6 +4,7 @@ node_modules
 
 # Build outputs
 .next
+**/.next
 **/out
 **/.turbo
 
@@ -27,10 +28,13 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 
-# Environment files (should be passed as build args)
+# Environment files (provide server configuration at runtime)
 .env
 .env.*
+**/.env
+**/.env.*
 !.env.example
+!**/.env.example
 
 # Documentation
 README.md
@@ -39,6 +43,7 @@ docs/
 
 # Test files
 **/*.test.ts
+**/*.test.mjs
 **/*.test.tsx
 **/*.spec.ts
 **/*.spec.tsx

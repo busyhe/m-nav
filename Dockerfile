@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.20.0 --activate
@@ -19,17 +19,15 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build args for environment variables
-ARG NOTION_PAGE_ID
 ARG NEXT_PUBLIC_GA_ID
 
-ENV NOTION_PAGE_ID=${NOTION_PAGE_ID}
 ENV NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID}
 
 # Build the application
 RUN pnpm build --filter=@m-nav/web
 
 # Stage 2: Production
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 

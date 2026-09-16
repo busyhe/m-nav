@@ -15,6 +15,8 @@
 
 ## 安装
 
+需要 Node.js 22.18 或更高版本（Notion 8 的间接依赖要求 Node.js 22）。Docker 镜像已使用 Node.js 22。
+
 1. 克隆仓库：
 
 ```bash
@@ -97,7 +99,6 @@ docker compose up -d
 ```bash
 # 构建镜像
 docker build \
-  --build-arg NOTION_PAGE_ID=your_notion_page_id \
   --build-arg NEXT_PUBLIC_GA_ID=your_ga_id \
   -t m-nav .
 
@@ -109,3 +110,7 @@ docker run -d -p 3000:3000 \
 ```
 
 应用将在 `http://localhost:3000` 可用。
+
+`NOTION_PAGE_ID` 在服务启动时读取，无需在构建镜像时提供。升级现有部署时，请重新构建并重启服务：`docker compose up -d --build`。Vercel 部署请将 Node.js 版本设置为 22.x 或更高，然后重新部署。
+
+运行 Notion 数据解析回归测试：`pnpm --filter @m-nav/web test`。

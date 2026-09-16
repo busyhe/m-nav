@@ -1,6 +1,6 @@
 'use client';
 
-import { DatabaseItem, PageData } from '@/lib/notion';
+import type { DatabaseItem, PageData } from '@/lib/notion';
 import { SiteCard } from './site-card';
 import { useSearchContext } from './search-context';
 import { useSiteTitle } from './site-title-context';
@@ -78,6 +78,11 @@ export function SiteContentClient({ siteData }: SiteContentClientProps) {
           <p className='text-muted-foreground'>
             没有找到与 &quot;{searchQuery}&quot; 相关的结果
           </p>
+        </div>
+      )}
+      {Object.keys(filteredData).length === 0 && !searchQuery.trim() && (
+        <div className='text-center py-8 text-muted-foreground'>
+          暂无导航内容
         </div>
       )}
     </>
